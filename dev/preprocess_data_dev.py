@@ -37,12 +37,42 @@ parser.add_argument(
 )
 
 
+# ==========  original main method  ==========
+# def main():
+#     # Import all settings for experiment.
+#     args = parser.parse_args()
+#     model = import_module(args.model)
+#     print(args.model)
+#     config, *_ = model.get_model()
+#
+#     config["preprocess"] = False  # we use raw data to generate preprocess data
+#     config["val_workers"] = 32
+#     config["workers"] = 32
+#     config['cross_dist'] = 6
+#     config['cross_angle'] = 0.5 * np.pi
+#
+#     os.makedirs(os.path.dirname(config['preprocess_train']),exist_ok=True)
+#
+#     # # original line
+#     # val(config)
+#     # test(config)
+#     # train(config)
+
+
 def main():
-    # Import all settings for experiment.
-    args = parser.parse_args()
-    model = import_module(args.model)
-    print(args.model)
-    config, *_ = model.get_model()
+
+    # debug the methods
+    run_debug()
+
+
+def run_debug():
+    """
+    Debug and tune the graph building.
+    :return:
+    """
+
+    # import config from file
+    from config import config
 
     config["preprocess"] = False  # we use raw data to generate preprocess data
     config["val_workers"] = 32
@@ -58,7 +88,7 @@ def main():
     # train(config)
 
     # debug the methods
-    val(config)
+    debug_sample(config)
 
 
 def debug_sample(config):
@@ -69,7 +99,12 @@ def debug_sample(config):
     :return:
     """
     # Data loader for training set
-    dataset = Dataset(config["train_split"], config, train=True)
+    dataset = Dataset(
+        config["sample_split"],
+        config,
+        train=True
+    )
+
     train_loader = DataLoader(
         dataset,
         batch_size=config["batch_size"],

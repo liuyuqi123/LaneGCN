@@ -66,6 +66,10 @@ config["train_split"] = os.path.join(
 config["val_split"] = os.path.join(root_path, "dataset/val/data")
 config["test_split"] = os.path.join(root_path, "dataset/test_obs/data")
 
+# ==================================================
+# modifications
+config['sample_split'] = os.path.join(root_path, "dataset/forecasting_sample/data")
+
 # Preprocessed Dataset
 config["preprocess"] = True # whether use preprocess or not
 config["preprocess_train"] = os.path.join(
