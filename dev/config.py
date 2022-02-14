@@ -80,6 +80,14 @@ config["preprocess_val"] = os.path.join(
 )
 config['preprocess_test'] = os.path.join(root_path, "dataset",'preprocess', 'test_test.p')
 
+# ==================================================
+# todo check the file format
+# this is the sample dataset
+config["preprocess_sample"] = os.path.join(
+    root_path, "dataset", "preprocess", "sample_crs_dist6_angle90.p"
+)
+
+
 """Model"""
 config["rot_aug"] = False
 config["pred_range"] = [-100.0, 100.0, -100.0, 100.0]

@@ -80,7 +80,7 @@ def run_debug():
     config['cross_dist'] = 6
     config['cross_angle'] = 0.5 * np.pi
 
-    os.makedirs(os.path.dirname(config['preprocess_train']),exist_ok=True)
+    os.makedirs(os.path.dirname(config['preprocess_sample']), exist_ok=True)
 
     # # original line
     # val(config)
@@ -116,6 +116,7 @@ def debug_sample(config):
     )
 
     # todo how to determine the loop range
+    #  check the range number
     stores = [None for x in range(205942)]
     t = time.time()
     for i, data in enumerate(tqdm(train_loader)):
@@ -143,8 +144,6 @@ def debug_sample(config):
             print(i, time.time() - t)
             t = time.time()
 
-
-
     dataset = PreprocessDataset(stores, config, train=True)
     data_loader = DataLoader(
         dataset,
@@ -155,11 +154,7 @@ def debug_sample(config):
         pin_memory=True,
         drop_last=False)
 
-    modify(config, data_loader,config["preprocess_train"])
-
-
-
-
+    modify(config, data_loader, config["preprocess_train"])
 
 
 def train(config):
@@ -389,6 +384,14 @@ class PreprocessDataset():
 
 
 def preprocess(graph, cross_dist, cross_angle=None):
+    """
+    This is the
+
+    :param graph:
+    :param cross_dist:
+    :param cross_angle:
+    :return:
+    """
     left, right = dict(), dict()
 
     lane_idcs = graph['lane_idcs']
