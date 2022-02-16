@@ -22,15 +22,35 @@ from data import MapQuery, ref_copy, dilated_nbrs2, dilated_nbrs
 
 
 class ArgoDataset(Dataset):
-    def __init__(self, split, config, train=True):
+    # # original line
+    # def __init__(self, split, config, train=True):
+
+    def __init__(self, split, config, train=False):
+        """
+        todo Fix the args for the debug mode
+
+        :param split:
+        :param config:
+        :param train:
+        """
         self.config = config
         self.train = train
 
+        # todo add this to the args
+        # use the sample dataset to debug
+        self.debug = True
+
+        # # todo fix this line, include the sample split
+        # if self.debug:
+        #     self.split = np.load(self.config['preprocess_sample'], allow_pickle=True)
+
         if 'preprocess' in config and config['preprocess']:
+            # todo check the split loading, load split from file
             if train:
                 self.split = np.load(self.config['preprocess_train'], allow_pickle=True)
             else:
                 self.split = np.load(self.config['preprocess_val'], allow_pickle=True)
+            pass
         else:
             self.avl = ArgoverseForecastingLoader(split)
             self.avl.seq_list = sorted(self.avl.seq_list)

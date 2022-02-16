@@ -71,20 +71,21 @@ config["test_split"] = os.path.join(root_path, "dataset/test_obs/data")
 config['sample_split'] = os.path.join(root_path, "dataset/forecasting_sample/data")
 
 # Preprocessed Dataset
-config["preprocess"] = True # whether use preprocess or not
+# todo check the usage: whether use preprocessed, this option is available when the preprocess data is prepared
+config["preprocess"] = False  # True
 config["preprocess_train"] = os.path.join(
-    root_path, "dataset","preprocess", "train_crs_dist6_angle90.p"
+    root_path, "dataset", "preprocess", "train_crs_dist6_angle90.p"
 )
 config["preprocess_val"] = os.path.join(
-    root_path,"dataset", "preprocess", "val_crs_dist6_angle90.p"
+    root_path, "dataset", "preprocess", "val_crs_dist6_angle90.p"
 )
-config['preprocess_test'] = os.path.join(root_path, "dataset",'preprocess', 'test_test.p')
+config['preprocess_test'] = os.path.join(root_path, "dataset", 'preprocess', 'test_test.p')
 
 # ==================================================
 # todo check the file format
 # this is the sample dataset
 config["preprocess_sample"] = os.path.join(
-    root_path, "dataset", "preprocess", "sample_crs_dist6_angle90.p"
+    root_path, "dataset", "preprocess", "sample.p"
 )
 
 

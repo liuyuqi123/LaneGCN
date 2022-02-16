@@ -19,7 +19,13 @@ from tqdm import tqdm
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
-from data import ArgoDataset as Dataset, from_numpy, ref_copy, collate_fn
+
+# # original line
+# from data import ArgoDataset as Dataset, from_numpy, ref_copy, collate_fn
+
+from dev.argoverse_dataset import ArgoDataset as Dataset
+from data import from_numpy, ref_copy, collate_fn
+
 from utils import Logger, load_pretrain, gpu
 
 os.umask(0)
@@ -72,9 +78,11 @@ def run_debug():
     """
 
     # import config from file
+    # this is the only entrance of config file
     from config import config
 
-    config["preprocess"] = False  # we use raw data to generate preprocess data
+    # we use raw data to generate preprocess data
+    config["preprocess"] = False  # False if preprocess data files exist
     config["val_workers"] = 32
     config["workers"] = 32
     config['cross_dist'] = 6
@@ -117,8 +125,14 @@ def debug_sample(config):
 
     # todo how to determine the loop range
     #  check the range number
-    stores = [None for x in range(205942)]
+    weired_range = int(100)
+    stores = [None for x in range(weired_range)]  # list to store result
     t = time.time()
+
+    # todo check if the tqdm issue???
+    # for i, data in enumerate(tqdm(train_loader)):
+
+    # don't use the tqdm
     for i, data in enumerate(tqdm(train_loader)):
         data = dict(data)
         for j in range(len(data["idx"])):
@@ -154,7 +168,8 @@ def debug_sample(config):
         pin_memory=True,
         drop_last=False)
 
-    modify(config, data_loader, config["preprocess_train"])
+    # the tag sample refers to the sample dataset
+    modify(config, data_loader, config["preprocess_sample"])
 
 
 def train(config):
@@ -310,7 +325,7 @@ def test(config):
         pin_memory=True,
         drop_last=False)
 
-    modify(config, data_loader,config["preprocess_test"])
+    modify(config, data_loader, config["preprocess_test"])
 
 
 def to_numpy(data):
@@ -337,8 +352,14 @@ def to_int16(data):
     return data
 
 
-
 def modify(config, data_loader, save):
+    """
+
+    :param config:
+    :param data_loader:
+    :param save: file path, pickle will create the folder if not exists
+    :return:
+    """
     t = time.time()
     store = data_loader.dataset.split
     for i, data in enumerate(data_loader):
@@ -361,6 +382,7 @@ def modify(config, data_loader, save):
     pickle.dump(store, f, protocol=pickle.HIGHEST_PROTOCOL)
     f.close()
 
+
 class PreprocessDataset():
     def __init__(self, split, config, train=True):
         self.split = split
@@ -381,11 +403,9 @@ class PreprocessDataset():
         return len(self.split)
 
 
-
-
 def preprocess(graph, cross_dist, cross_angle=None):
     """
-    This is the
+    This is the core method to preprocess the datasets.
 
     :param graph:
     :param cross_dist:
@@ -402,8 +422,11 @@ def preprocess(graph, cross_dist, cross_angle=None):
     dist = torch.sqrt((dist ** 2).sum(2))
     hi = torch.arange(num_nodes).long().to(dist.device).view(-1, 1).repeat(1, num_nodes).view(-1)
     wi = torch.arange(num_nodes).long().to(dist.device).view(1, -1).repeat(num_nodes, 1).view(-1)
+
+    # todo row_idcs refers to???
     row_idcs = torch.arange(num_nodes).long().to(dist.device)
 
+    # this block is not used
     if cross_angle is not None:
         f1 = graph['feats'][hi]
         f2 = graph['ctrs'][wi] - graph['ctrs'][hi]
