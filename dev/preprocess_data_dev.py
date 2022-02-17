@@ -84,7 +84,7 @@ def run_debug():
     # we use raw data to generate preprocess data
     config["preprocess"] = False  # False if preprocess data files exist
     config["val_workers"] = 32
-    config["workers"] = 32
+    config["workers"] = 6  # 32
     config['cross_dist'] = 6
     config['cross_angle'] = 0.5 * np.pi
 
@@ -110,7 +110,7 @@ def debug_sample(config):
     dataset = Dataset(
         config["sample_split"],
         config,
-        train=True
+        train=False
     )
 
     train_loader = DataLoader(
@@ -119,7 +119,7 @@ def debug_sample(config):
         num_workers=config["workers"],
         shuffle=False,
         collate_fn=collate_fn,
-        pin_memory=True,
+        pin_memory=True,  # todo check this param transform path
         drop_last=False,
     )
 
@@ -133,7 +133,7 @@ def debug_sample(config):
     # for i, data in enumerate(tqdm(train_loader)):
 
     # don't use the tqdm
-    for i, data in enumerate(tqdm(train_loader)):
+    for i, data in enumerate(train_loader):
         data = dict(data)
         for j in range(len(data["idx"])):
             store = dict()
