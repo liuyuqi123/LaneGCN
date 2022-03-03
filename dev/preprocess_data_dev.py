@@ -77,14 +77,14 @@ def run_debug():
     :return:
     """
 
-    # import config from file
-    # this is the only entrance of config file
+    # import the config dict from file
+    # use this as the only entrance of config file for dev version code
     from config import config
 
     # we use raw data to generate preprocess data
     config["preprocess"] = False  # False if preprocess data files exist
     config["val_workers"] = 32
-    config["workers"] = 6  # 32
+    config["workers"] = 0  # 32
     config['cross_dist'] = 6
     config['cross_angle'] = 0.5 * np.pi
 

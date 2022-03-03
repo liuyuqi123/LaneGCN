@@ -134,6 +134,7 @@ class ArgoDataset(Dataset):
             return data
 
         data['graph'] = self.get_lane_graph(data)
+
         return data
 
     def __len__(self):
@@ -149,7 +150,7 @@ class ArgoDataset(Dataset):
         df = copy.deepcopy(self.avl[idx].seq_df)
 
         agt_ts = np.sort(np.unique(df['TIMESTAMP'].values))
-        mapping = dict()
+        mapping = dict()  # map timestamp to step index
         for i, ts in enumerate(agt_ts):
             mapping[ts] = i
 
@@ -184,6 +185,16 @@ class ArgoDataset(Dataset):
         return data
 
     def get_obj_feats(self, data):
+        """
+        todo list
+         - figure out the definition of feats and trajs and ctrs
+
+
+        :param data:
+        :return:
+        """
+
+
         orig = data['trajs'][0][19].copy().astype(np.float32)
 
         if self.train and self.config['rot_aug']:
