@@ -43,6 +43,9 @@ config["lr"] = [1e-3, 1e-4]
 config["lr_epochs"] = [32]
 config["lr_func"] = StepLR(config["lr"], config["lr_epochs"])
 
+# TODO use related path
+config['save_dir'] = '/home/liuyuqi/PycharmProjects/LaneGCN/dev/model/36.000.ckpt'
+
 
 if "save_dir" not in config:
     config["save_dir"] = os.path.join(
@@ -63,7 +66,10 @@ config["val_workers"] = config["workers"]
 config["train_split"] = os.path.join(
     root_path, "dataset/train/data"
 )
-config["val_split"] = os.path.join(root_path, "dataset/val/data")
+# config["val_split"] = os.path.join(root_path, "dataset/val/data")
+
+config["val_split"] = '/home/liuyuqi/PycharmProjects/LaneGCN_datasets/dataset/val/data'
+
 config["test_split"] = os.path.join(root_path, "dataset/test_obs/data")
 
 # ==================================================
@@ -72,13 +78,30 @@ config['sample_split'] = os.path.join(root_path, "dataset/forecasting_sample/dat
 
 # Preprocessed Dataset
 # todo check the usage: whether use preprocessed, this option is available when the preprocess data is prepared
-config["preprocess"] = False  # True
+# config["preprocess"] = False  # True
+
+# the val preprocess is used in debug
+config["preprocess"] = True  #
+
+
 config["preprocess_train"] = os.path.join(
     root_path, "dataset", "preprocess", "train_crs_dist6_angle90.p"
 )
-config["preprocess_val"] = os.path.join(
-    root_path, "dataset", "preprocess", "val_crs_dist6_angle90.p"
-)
+
+# config["preprocess_val"] = os.path.join(
+#     root_path, "dataset", "preprocess", "val_crs_dist6_angle90.p"
+# )
+
+# debug the preprocess data
+# as the file
+config["preprocess_val"] = '/home/liuyuqi/PycharmProjects/LaneGCN/dev/dataset/preprocess/val_crs_dist6_angle90.p'
+
+# as the path
+# config["preprocess_val"] = '/home/liuyuqi/PycharmProjects/LaneGCN/dev/dataset/preprocess/'
+
+
+
+
 config['preprocess_test'] = os.path.join(root_path, "dataset", 'preprocess', 'test_test.p')
 
 # ==================================================

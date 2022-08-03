@@ -52,7 +52,10 @@ sys.path.insert(0, root_path)
 
 parser = argparse.ArgumentParser(description="Fuse Detection in Pytorch")
 parser.add_argument(
-    "-m", "--model", default="lanegcn", type=str, metavar="MODEL", help="model name"
+    # "-m", "--model", default="lanegcn", type=str, metavar="MODEL", help="model name"
+
+    # use the dev version
+    "-m", "--model", default="lanegcn_dev", type=str, metavar="MODEL", help="model name"
 )
 parser.add_argument("--eval", action="store_true")
 parser.add_argument(
