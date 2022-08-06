@@ -22,8 +22,8 @@ from argoverse.data_loading.argoverse_forecasting_loader import ArgoverseForecas
 from argoverse.map_representation.map_api import ArgoverseMap
 from skimage.transform import rotate
 
-from data import MapQuery, ref_copy, dilated_nbrs2, dilated_nbrs
-
+# from data import MapQuery, ref_copy, dilated_nbrs2, dilated_nbrs
+from data import MapQuery, ref_copy
 
 class ArgoDataset(Dataset):
     # # original line
@@ -408,3 +408,38 @@ class ArgoDataset(Dataset):
             else:
                 graph[key] += dilated_nbrs(graph[key][0], graph['num_nodes'], self.config['num_scales'])
         return graph
+
+
+def dilated_nbrs(nbr, num_nodes, num_scales):
+    data = np.ones(len(nbr['u']), np.bool)
+    csr = sparse.csr_matrix((data, (nbr['u'], nbr['v'])), shape=(num_nodes, num_nodes))
+
+    mat = csr
+    nbrs = []
+    for i in range(1, num_scales):
+        mat = mat * mat
+
+        nbr = dict()
+        coo = mat.tocoo()
+        nbr['u'] = coo.row.astype(np.int64)
+        nbr['v'] = coo.col.astype(np.int64)
+        nbrs.append(nbr)
+    return nbrs
+
+
+def dilated_nbrs2(nbr, num_nodes, scales):
+    data = np.ones(len(nbr['u']), np.bool)
+    csr = sparse.csr_matrix((data, (nbr['u'], nbr['v'])), shape=(num_nodes, num_nodes))
+
+    mat = csr
+    nbrs = []
+    for i in range(1, max(scales)):
+        mat = mat * csr
+
+        if i + 1 in scales:
+            nbr = dict()
+            coo = mat.tocoo()
+            nbr['u'] = coo.row.astype(np.int64)
+            nbr['v'] = coo.col.astype(np.int64)
+            nbrs.append(nbr)
+    return nbrs
