@@ -54,11 +54,11 @@ parser.add_argument(
 parser.add_argument(
     # "--weight", default="", type=str, metavar="WEIGHT", help="checkpoint path"
 
-    # # on the 1660ti server
-    # "--weight", default="/home/liuyuqi/PycharmProjects/LaneGCN/dev/model/36.000.ckpt", type=str, metavar="WEIGHT",
+    # on the 1660ti server
+    "--weight", default="/home/liuyuqi/PycharmProjects/LaneGCN/dev/model/36.000.ckpt", type=str, metavar="WEIGHT",
 
-    # on the 3080ti server
-    "--weight", default="/home/lyq/PycharmProjects/LaneGCN/dev/model/36.000.ckpt", type=str, metavar="WEIGHT",
+    # # on the 3080ti server
+    # "--weight", default="/home/lyq/PycharmProjects/LaneGCN/dev/model/36.000.ckpt", type=str, metavar="WEIGHT",
 
     help="checkpoint path"
 )
@@ -124,7 +124,7 @@ def main():
     else:
         # for test set: save as h5 for submission in evaluation server
         from argoverse.evaluation.competition_util import generate_forecasting_h5
-        generate_forecasting_h5(preds, f"{config['save_dir']}/submit.h5")  # this might take awhile
+        generate_forecasting_h5(preds, f"{config['save_dir']}/submit.h5")  # this might take a while
     import ipdb;
     ipdb.set_trace()
 

@@ -25,6 +25,8 @@ from skimage.transform import rotate
 # from data import MapQuery, ref_copy, dilated_nbrs2, dilated_nbrs
 from data import MapQuery, ref_copy
 
+import matplotlib.pyplot as plt
+
 
 class ArgoDataset(Dataset):
     # # original line
@@ -498,6 +500,14 @@ def dilated_nbrs(nbr, num_nodes, num_scales):
     csr = sparse.csr_matrix((data, (nbr['u'], nbr['v'])), shape=(num_nodes, num_nodes))
 
     mat = csr
+
+    # debug the adjacent matrix
+    data_debug = np.ones(len(nbr['u']))
+    csr_debug = sparse.csr_matrix((data_debug, (nbr['u'], nbr['v'])), shape=(num_nodes, num_nodes))
+
+    plt.spy(csr_debug)
+    plt.show()
+
     nbrs = []
     for i in range(1, num_scales):
         mat = mat * mat
@@ -529,10 +539,9 @@ def dilated_nbrs2(nbr, num_nodes, scales):
     return nbrs
 
 
-import matplotlib.pyplot as plt
-
-def visualize_adjacent_matrix(mat):
+def visualize_adjacent_matrix(matrix):
     """"""
+    plt.matshow(matrix)
 
 
 

@@ -344,10 +344,13 @@ class MapNet(nn.Module):
         feat = self.relu(feat)
 
         """fuse map"""
-        res = feat  #
+        res = feat
 
         # check if is 4
         _range = len(self.fuse["ctr"])
+
+        # debug only
+        debug_var = len(self.fuse["ctr"])
 
         for i in range(len(self.fuse["ctr"])):
             temp = self.fuse["ctr"][i](feat)
@@ -360,6 +363,8 @@ class MapNet(nn.Module):
                         graph[k1][k2]["u"],
                         self.fuse[key][i](feat[graph[k1][k2]["v"]]),
                     )
+
+                    print('')
 
             if len(graph["left"]["u"] > 0):
                 temp.index_add_(
