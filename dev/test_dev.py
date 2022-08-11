@@ -29,7 +29,12 @@ from torch.utils.data import DataLoader, Sampler
 from torch.utils.data.distributed import DistributedSampler
 from tqdm import tqdm
 
-from data import ArgoTestDataset
+# # original script
+# from data import ArgoTestDataset
+
+# dev version script
+from argoverse_dataset import ArgoTestDataset
+
 from utils import Logger, load_pretrain
 
 root_path = os.path.dirname(os.path.abspath(__file__))
@@ -48,7 +53,13 @@ parser.add_argument(
 )
 parser.add_argument(
     # "--weight", default="", type=str, metavar="WEIGHT", help="checkpoint path"
-    "--weight", default="/home/liuyuqi/PycharmProjects/LaneGCN/dev/model/36.000.ckpt", type=str, metavar="WEIGHT",
+
+    # # on the 1660ti server
+    # "--weight", default="/home/liuyuqi/PycharmProjects/LaneGCN/dev/model/36.000.ckpt", type=str, metavar="WEIGHT",
+
+    # on the 3080ti server
+    "--weight", default="/home/lyq/PycharmProjects/LaneGCN/dev/model/36.000.ckpt", type=str, metavar="WEIGHT",
+
     help="checkpoint path"
 )
 

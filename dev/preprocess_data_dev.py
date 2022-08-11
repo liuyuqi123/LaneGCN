@@ -66,8 +66,11 @@ parser.add_argument(
 
 
 def main():
+    """
+    Debug the methods.
+    """
 
-    # debug the methods
+    # debug with the sample data.
     run_debug()
 
 
@@ -405,7 +408,7 @@ class PreprocessDataset():
 
 def preprocess(graph, cross_dist, cross_angle=None):
     """
-    This is the core method to preprocess the datasets.
+    This is a key method to preprocess the lane data.
 
     :param graph:
     :param cross_dist:

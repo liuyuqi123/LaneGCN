@@ -24,7 +24,14 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 
 
 file_path = os.path.abspath(__file__)
-root_path = os.path.dirname(file_path)
+
+# # original line
+# root_path = os.path.dirname(file_path)
+
+# use the dir of the project
+index = file_path.split('/').index('LaneGCN') if 'LaneGCN' in file_path.split('/') else -1
+root_path = '/' + os.path.join(*file_path.split('/')[:index+1]) + '/'
+
 model_name = os.path.basename(file_path).split(".")[0]
 
 
@@ -44,7 +51,7 @@ config["lr_epochs"] = [32]
 config["lr_func"] = StepLR(config["lr"], config["lr_epochs"])
 
 # TODO use related path
-config['save_dir'] = '/home/liuyuqi/PycharmProjects/LaneGCN/dev/model/36.000.ckpt'
+config['save_dir'] = './model/36.000.ckpt'
 
 
 if "save_dir" not in config:
@@ -57,6 +64,10 @@ if not os.path.isabs(config["save_dir"]):
 
 config["batch_size"] = 32
 config["val_batch_size"] = 32
+
+config["batch_size"] = 5
+config["val_batch_size"] = 5
+
 config["workers"] = 0
 config["val_workers"] = config["workers"]
 
@@ -68,7 +79,12 @@ config["train_split"] = os.path.join(
 )
 # config["val_split"] = os.path.join(root_path, "dataset/val/data")
 
-config["val_split"] = '/home/liuyuqi/PycharmProjects/LaneGCN_datasets/dataset/val/data'
+# # on the 1660ti server
+# config["val_split"] = '/home/liuyuqi/PycharmProjects/LaneGCN_datasets/dataset/val/data'
+
+# on the 3080ti server
+config["val_split"] = '/home/lyq/PycharmProjects/LaneGCN_datasets/dataset/val/data'
+
 
 config["test_split"] = os.path.join(root_path, "dataset/test_obs/data")
 
@@ -93,8 +109,11 @@ config["preprocess_train"] = os.path.join(
 # )
 
 # debug the preprocess data
-# as the file
-config["preprocess_val"] = '/home/liuyuqi/PycharmProjects/LaneGCN/dev/dataset/preprocess/val_crs_dist6_angle90.p'
+# # as the file
+# config["preprocess_val"] = '/home/liuyuqi/PycharmProjects/LaneGCN/dev/dataset/preprocess/val_crs_dist6_angle90.p'
+
+# use the relative path
+config["preprocess_val"] = '../dataset/preprocess/val_crs_dist6_angle90.p'
 
 # as the path
 # config["preprocess_val"] = '/home/liuyuqi/PycharmProjects/LaneGCN/dev/dataset/preprocess/'

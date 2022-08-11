@@ -25,6 +25,7 @@ from skimage.transform import rotate
 # from data import MapQuery, ref_copy, dilated_nbrs2, dilated_nbrs
 from data import MapQuery, ref_copy
 
+
 class ArgoDataset(Dataset):
     # # original line
     # def __init__(self, split, config, train=True):
@@ -264,6 +265,7 @@ class ArgoDataset(Dataset):
         data['rot'] = rot
         data['gt_preds'] = gt_preds
         data['has_preds'] = has_preds
+
         return data
 
     def get_lane_graph(self, data):
@@ -293,8 +295,14 @@ class ArgoDataset(Dataset):
         ctrs, feats, turn, control, intersect = [], [], [], [], []
         for lane_id in lane_ids:
             lane = lanes[lane_id]
-            ctrln = lane.centerline
+            ctrln = lane.centerline  #
             num_segs = len(ctrln) - 1
+
+            #
+            debug_var = ctrln[:-1]
+            debug_var_2 = ctrln[1:]
+            debug_var_3 = ctrln[1:]
+            debug_var_4 = ctrln[:-1]
 
             ctrs.append(np.asarray((ctrln[:-1] + ctrln[1:]) / 2.0, np.float32))
             feats.append(np.asarray(ctrln[1:] - ctrln[:-1], np.float32))
@@ -407,7 +415,82 @@ class ArgoDataset(Dataset):
                 graph[key] += dilated_nbrs2(graph[key][0], graph['num_nodes'], self.config['scales'])
             else:
                 graph[key] += dilated_nbrs(graph[key][0], graph['num_nodes'], self.config['num_scales'])
+
         return graph
+
+
+class ArgoTestDataset(ArgoDataset):
+    def __init__(self, split, config, train=False):
+
+        self.config = config
+        self.train = train
+        split2 = config['val_split'] if split == 'val' else config['test_split']
+        split = self.config['preprocess_val'] if split == 'val' else self.config['preprocess_test']
+
+        self.avl = ArgoverseForecastingLoader(split2)
+        self.avl.seq_list = sorted(self.avl.seq_list)
+        if 'preprocess' in config and config['preprocess']:
+            if train:
+                self.split = np.load(split, allow_pickle=True)
+            else:
+                self.split = np.load(split, allow_pickle=True)
+        else:
+            self.avl = ArgoverseForecastingLoader(split)
+            self.am = ArgoverseMap()
+
+    def __getitem__(self, idx):
+        if 'preprocess' in self.config and self.config['preprocess']:
+            data = self.split[idx]
+            data['argo_id'] = int(self.avl.seq_list[idx].name[:-4])  # 160547
+
+            if self.train and self.config['rot_aug']:
+                # TODO: Delete Here because no rot_aug
+                new_data = dict()
+                for key in ['orig', 'gt_preds', 'has_preds']:
+                    new_data[key] = ref_copy(data[key])
+
+                dt = np.random.rand() * self.config['rot_size']  # np.pi * 2.0
+                theta = data['theta'] + dt
+                new_data['theta'] = theta
+                new_data['rot'] = np.asarray([
+                    [np.cos(theta), -np.sin(theta)],
+                    [np.sin(theta), np.cos(theta)]], np.float32)
+
+                rot = np.asarray([
+                    [np.cos(-dt), -np.sin(-dt)],
+                    [np.sin(-dt), np.cos(-dt)]], np.float32)
+                new_data['feats'] = data['feats'].copy()
+                new_data['feats'][:, :, :2] = np.matmul(new_data['feats'][:, :, :2], rot)
+                new_data['ctrs'] = np.matmul(data['ctrs'], rot)
+
+                graph = dict()
+                for key in ['num_nodes', 'turn', 'control', 'intersect', 'pre', 'suc', 'lane_idcs', 'left_pairs',
+                            'right_pairs']:
+                    graph[key] = ref_copy(data['graph'][key])
+                graph['ctrs'] = np.matmul(data['graph']['ctrs'], rot)
+                graph['feats'] = np.matmul(data['graph']['feats'], rot)
+                new_data['graph'] = graph
+                data = new_data
+            else:
+                new_data = dict()
+                for key in ['orig', 'gt_preds', 'has_preds', 'theta', 'rot', 'feats', 'ctrs', 'graph', 'argo_id',
+                            'city']:
+                    if key in data:
+                        new_data[key] = ref_copy(data[key])
+                data = new_data
+            return data
+
+        data = self.read_argo_data(idx)
+        data = self.get_obj_feats(data)
+        data['graph'] = self.get_lane_graph(data)
+        data['idx'] = idx
+        return data
+
+    def __len__(self):
+        if 'preprocess' in self.config and self.config['preprocess']:
+            return len(self.split)
+        else:
+            return len(self.avl)
 
 
 def dilated_nbrs(nbr, num_nodes, num_scales):
@@ -424,6 +507,7 @@ def dilated_nbrs(nbr, num_nodes, num_scales):
         nbr['u'] = coo.row.astype(np.int64)
         nbr['v'] = coo.col.astype(np.int64)
         nbrs.append(nbr)
+
     return nbrs
 
 
@@ -443,3 +527,13 @@ def dilated_nbrs2(nbr, num_nodes, scales):
             nbr['v'] = coo.col.astype(np.int64)
             nbrs.append(nbr)
     return nbrs
+
+
+import matplotlib.pyplot as plt
+
+def visualize_adjacent_matrix(mat):
+    """"""
+
+
+
+

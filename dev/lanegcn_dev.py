@@ -219,6 +219,7 @@ def graph_gather(graphs):
                 for x in temp
             ]
             graph[k1][k2] = torch.cat(temp)
+
     return graph
 
 
@@ -322,6 +323,8 @@ class MapNet(nn.Module):
         self.fuse = nn.ModuleDict(fuse)
         self.relu = nn.ReLU(inplace=True)
 
+        print('')
+
     def forward(self, graph):
         if (
             len(graph["feats"]) == 0
@@ -341,7 +344,7 @@ class MapNet(nn.Module):
         feat = self.relu(feat)
 
         """fuse map"""
-        res = feat
+        res = feat  #
 
         # check if is 4
         _range = len(self.fuse["ctr"])
@@ -378,6 +381,7 @@ class MapNet(nn.Module):
             feat += res
             feat = self.relu(feat)
             res = feat
+
         return feat, graph["idcs"], graph["ctrs"]
 
 
