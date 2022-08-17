@@ -201,7 +201,6 @@ class ArgoDataset(Dataset):
         :return:
         """
 
-
         orig = data['trajs'][0][19].copy().astype(np.float32)
 
         if self.train and self.config['rot_aug']:
@@ -506,6 +505,15 @@ def dilated_nbrs(nbr, num_nodes, num_scales):
     csr_debug = sparse.csr_matrix((data_debug, (nbr['u'], nbr['v'])), shape=(num_nodes, num_nodes))
 
     plt.spy(csr_debug)
+    plt.show()
+
+    dense_mat = csr_debug.todense()
+    non_zero = np.nonzero(dense_mat)
+
+    # from matplotlib.colors import ListedColormap
+    #
+    # cmap = ListedColormap(['w', 'k', 'r'])
+    plt.matshow(dense_mat, interpolation=None, cmap='RdYlGn_r')
     plt.show()
 
     nbrs = []

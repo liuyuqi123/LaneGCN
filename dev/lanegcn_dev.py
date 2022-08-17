@@ -346,11 +346,9 @@ class MapNet(nn.Module):
         """fuse map"""
         res = feat
 
-        # check if is 4
-        _range = len(self.fuse["ctr"])
-
-        # debug only
-        debug_var = len(self.fuse["ctr"])
+        # debug
+        # check if is 4, refers to the stacks of 4
+        debug_range = len(self.fuse["ctr"])
 
         for i in range(len(self.fuse["ctr"])):
             temp = self.fuse["ctr"][i](feat)
@@ -358,6 +356,43 @@ class MapNet(nn.Module):
                 if key.startswith("pre") or key.startswith("suc"):
                     k1 = key[:3]
                     k2 = int(key[3:])
+
+                    # ==================================================
+                    # debug
+
+                    debug_var_1 = graph[k1][k2]["u"]
+                    index = debug_var_1.cpu().detach().numpy()
+
+                    # input tensor
+                    debug_var_2 = feat[graph[k1][k2]["v"]]
+
+                    # network
+                    debug_var_3 = self.fuse[key][i]
+
+                    # original result
+                    debug_var_4 = self.fuse[key][i](feat[graph[k1][k2]["v"]])
+
+                    # check matrix multiply result
+                    # network weights
+                    params = list(debug_var_3.named_parameters())
+                    weights = params[0]
+                    # bias = params[1]  # bias is not used in this Linear layer
+                    weights_tensor = weights[1].cpu().detach()
+                    weights_array = weights[1].cpu().detach().numpy()
+                    www = debug_var_3.weight  # .t()
+
+                    # matrix multiply
+                    input_tensor = debug_var_2.cpu().detach()
+                    result = torch.mm(input_tensor, weights_tensor.t())
+
+                    print('')
+
+
+
+
+                    # ==================================================
+
+                    # add the tensor according to the adjacent matrix
                     temp.index_add_(
                         0,
                         graph[k1][k2]["u"],
