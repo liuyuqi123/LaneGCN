@@ -164,7 +164,6 @@ class Net(nn.Module):
         return out
 
 
-
 def actor_gather(actors: List[Tensor]) -> Tuple[Tensor, List[Tensor]]:
     batch_size = len(actors)
     num_actors = [len(x) for x in actors]
@@ -203,9 +202,17 @@ def graph_gather(graphs):
 
     for k1 in ["pre", "suc"]:
         graph[k1] = []
-        for i in range(len(graphs[0]["pre"])):
+        for i in range(len(graphs[0]["pre"])):  # i refers to the dilation number
             graph[k1].append(dict())
             for k2 in ["u", "v"]:
+
+                # # this part is for debug
+                # for j in range(batch_size):  # j refers to the batch index number
+                #     debug_var_1 = graphs[j][k1][i][k2] + counts[j]
+                #     print('')
+
+                debug_var_2 = [graphs[j][k1][i][k2] + counts[j] for j in range(batch_size)]
+
                 graph[k1][i][k2] = torch.cat(
                     [graphs[j][k1][i][k2] + counts[j] for j in range(batch_size)], 0
                 )
@@ -338,7 +345,7 @@ class MapNet(nn.Module):
                 temp.new().resize_(0),
             )
 
-        ctrs = torch.cat(graph["ctrs"], 0)
+        ctrs = torch.cat(graph["ctrs"], 0)  #
         feat = self.input(ctrs)
         feat += self.seg(graph["feats"])
         feat = self.relu(feat)
@@ -350,8 +357,8 @@ class MapNet(nn.Module):
         # check if is 4, refers to the stacks of 4
         debug_range = len(self.fuse["ctr"])
 
-        for i in range(len(self.fuse["ctr"])):
-            temp = self.fuse["ctr"][i](feat)
+        for i in range(len(self.fuse["ctr"])):  # 4 stacks
+            temp = self.fuse["ctr"][i](feat)  # dimension is the feature length: 128
             for key in self.fuse:
                 if key.startswith("pre") or key.startswith("suc"):
                     k1 = key[:3]
@@ -359,12 +366,18 @@ class MapNet(nn.Module):
 
                     # ==================================================
                     # debug
+                    feat_copy = feat
+                    feat_array = feat_copy.detach().cpu().numpy()
 
+                    # index for LaneConv index_add
                     debug_var_1 = graph[k1][k2]["u"]
-                    index = debug_var_1.cpu().detach().numpy()
+                    add_index = debug_var_1.cpu().detach().numpy()
 
                     # input tensor
+                    feature_index = graph[k1][k2]["v"]
+                    feature_index = feature_index.cpu().detach().numpy()
                     debug_var_2 = feat[graph[k1][k2]["v"]]
+                    slice_feat = debug_var_2.cpu().detach().numpy()
 
                     # network
                     debug_var_3 = self.fuse[key][i]
@@ -386,9 +399,6 @@ class MapNet(nn.Module):
                     result = torch.mm(input_tensor, weights_tensor.t())
 
                     print('')
-
-
-
 
                     # ==================================================
 
