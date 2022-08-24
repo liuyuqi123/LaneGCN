@@ -120,7 +120,7 @@ def debug_sample(config):
         dataset,
         batch_size=config["batch_size"],
         num_workers=config["workers"],
-        shuffle=False,
+        shuffle=False,  # False for debug and test
         collate_fn=collate_fn,
         pin_memory=True,  # todo check this param transform path
         drop_last=False,

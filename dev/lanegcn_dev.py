@@ -406,7 +406,7 @@ class MapNet(nn.Module):
                     temp.index_add_(
                         0,
                         graph[k1][k2]["u"],
-                        self.fuse[key][i](feat[graph[k1][k2]["v"]]),
+                        self.fuse[key][i](feat[graph[k1][k2]["v"]]),  # the most critical line in LaneConv operator
                     )
 
                     print('')

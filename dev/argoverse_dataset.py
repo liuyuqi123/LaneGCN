@@ -330,13 +330,13 @@ class ArgoDataset(Dataset):
         pre, suc = dict(), dict()
         for key in ['u', 'v']:
             pre[key], suc[key] = [], []
-        for i, lane_id in enumerate(lane_ids):
+        for i, lane_id in enumerate(lane_ids):  # iter each lane
             lane = lanes[lane_id]
             idcs = node_idcs[i]
 
             pre['u'] += idcs[1:]
             pre['v'] += idcs[:-1]
-            if lane.predecessors is not None:
+            if lane.predecessors is not None:  # this block is key for adjacent matrix
                 for nbr_id in lane.predecessors:
                     if nbr_id in lane_ids:
                         j = lane_ids.index(nbr_id)
