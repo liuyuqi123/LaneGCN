@@ -375,6 +375,7 @@ class ArgoDataset(Dataset):
                         j = lane_ids.index(nbr_id)
                         suc_pairs.append([i, j])
 
+            # process lane left and right relationship
             nbr_id = lane.l_neighbor_id
             if nbr_id is not None:
                 if nbr_id in lane_ids:

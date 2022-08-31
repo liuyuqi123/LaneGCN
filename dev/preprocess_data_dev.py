@@ -450,6 +450,9 @@ def preprocess(graph, cross_dist, cross_angle=None):
     suc = graph['suc_pairs'].new().float().resize_(num_lanes, num_lanes).zero_()
     suc[graph['suc_pairs'][:, 0], graph['suc_pairs'][:, 1]] = 1
 
+    # ==================================================
+    # this block till the end is how the left and right connections processed
+
     pairs = graph['left_pairs']
     if len(pairs) > 0:
         mat = pairs.new().float().resize_(num_lanes, num_lanes).zero_()
